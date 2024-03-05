@@ -52,6 +52,7 @@ const userSchema = new Schema({
 // Middleware function executed before saving a user document
 userSchema.pre("save", async function (next) {
     // Check if the password field is modified before hashing
+    // user document will be saved again and again if user makes any changes in his profile but its not necessary that he will change his passowrd everytym
     if (!this.isModified("password")) return next();
 
     // Hashing the password using bcrypt with a cost factor of 10

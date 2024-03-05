@@ -2,10 +2,11 @@
 import { Router } from "express";
 
 // Importing the registerUser function from the user.controller module
-import { registerUser } from "../controllers/user.controller.js";
+import { loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
 
 // Importing the upload middleware from the multer.middleware module
 import { upload } from "../middlewares/multer.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 // Creating an instance of the Express Router
 const router = Router();
@@ -26,6 +27,9 @@ router.route("/register").post(
     // Handling the registration process using the registerUser controller function
     registerUser
 );
+
+router.route("/login").poost(loginUser)
+router.route("/logout").post(verifyJWT,logoutUser)
 
 // Exporting the router to make it available for use in other modules
 export default router;

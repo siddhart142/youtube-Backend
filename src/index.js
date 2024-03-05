@@ -15,6 +15,7 @@ dotenv.config({
 // Connecting to MongoDB using the connectDB function
 connectDB()
     .then(() => {
+        
         // Handling errors and logging them if they occur
         app.on("error", (error) => {
             console.log("ERROR ", error);

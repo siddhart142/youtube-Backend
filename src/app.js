@@ -24,11 +24,16 @@ app.use(express.static("public"));
 // Parsing and handling cookies using the cookie-parser middleware
 app.use(cookieParser());
 
+
+
+
 // Importing user routes from the specified file
 import userRoutes from "./routes/user.routes.js";
 
 // Declaring and using user routes under the "/api/v1/users" endpoint
 app.use("/api/v1/users", userRoutes);
+
+
 
 // Exporting the configured Express app
 export default app;
