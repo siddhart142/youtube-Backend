@@ -7,18 +7,20 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 
 
-const generateAccessAndRefreshTokens = async(userId){
+const generateAccessAndRefreshTokens = async(userId)=> {
     try{
 
         const user = await User.findById(userId)
+        // console.log(user)
         const refreshToken = user.generateRefreshToken()
-        const accessToekn = user.generateAccessToken()
+        // console.log(refreshToken)
+        const accessToken = user.generateAccessToken()
 
         user.refreshToken = refreshToken
 
         await user.save({validateBeforeSave : false})
 
-        return {accessToekn,refreshToken}
+        return {accessToken,refreshToken}
 
     }catch(error){
         throw new ApiError(500,"Something went wrong while generating Tokens")
@@ -101,7 +103,7 @@ const loginUser = asyncHandler( async (req,res) => {
     // access and refresh token
     // send cookies
     
-    const {username, email, passowrd} = req.body
+    const {username, email, password} = req.body
 
     if(!username && !email){
         throw new ApiError(400,"Username or email is required")
@@ -118,13 +120,14 @@ const loginUser = asyncHandler( async (req,res) => {
         throw new ApiError(404,"User does not exist")
     }
 
-    const isValidUser = await user.isPasswordCorrect(user.passowrd)
+
+    const isValidUser = await user.isPasswordCorrect(password)
 
     if(!isValidUser){
         throw new ApiError(401,"Invalid User Credentials")
     }
 
-    const {accessToekn,refreshToken} = await generateAccessAndRefreshTokens(user._id)
+    const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(user._id)
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
@@ -136,11 +139,11 @@ const loginUser = asyncHandler( async (req,res) => {
 
     return res
     .status(200)
-    .cookie("accessToken" , accessToekn, options)
+    .cookie("accessToken" , accessToken, options)
     .cookie("refreshToken", refreshToken, options)
     .json(
         new ApiResponse(200,{
-            user : loggedInUser, accessToekn, refreshToken
+            user : loggedInUser, accessToken, refreshToken
         },
         "User LoggedIn Successfully")
     )
@@ -169,7 +172,7 @@ const logoutUser = asyncHandler( async(req,res)=> {
 
     return res
     .status(200)
-    .clearCookie("accesToken",options)
+    .clearCookie("accessToken",options)
     .clearCookie("refreshToken",options)
     .json(
         new ApiResponse(200,{},"User LoggedOut")

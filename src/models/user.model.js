@@ -2,6 +2,7 @@
 import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { ApiError } from "../utils/ApiError.js";
 
 // Creating a new mongoose schema for the User model
 const userSchema = new Schema({
@@ -70,33 +71,47 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 userSchema.methods.generateAccessToken = function () {
     // Using JWT to create a signed token containing user information (id, email, username, fullname)
     // The token is signed with a secret key and has an expiration time
-    return jwt.sign(
-        {
-            _id: this._id,
-            email: this.email,
-            username: this.username,
-            fullname: this.fullname
-        },
-        process.env.ACCESS_TOKEN_SECRET,
-        {
-            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
-        }
-    );
+    try {
+        return jwt.sign(
+            {
+                _id: this._id,
+                email: this.email,
+                username: this.username,
+                fullname: this.fullname
+            },
+            process.env.ACCESSS_TOKEN_SECRET,
+            {
+                expiresIn: process.env.ACCESSS_TOKEN_EXPIRY
+            }
+        );
+    } catch (error) {
+        // console.log(error)
+        // console.log("error in model")
+        throw new ApiError(500,"Error while generating accessToken")
+    }
 };
 
 // Method to generate a refresh token for token refreshing
 userSchema.methods.generateRefreshToken = function () {
     // Creating a separate token for refreshing, typically with a longer expiration time
     // The refresh token is used to obtain a new access token without requiring the user to log in again
-    return jwt.sign(
-        {
-            _id: this._id,
-        },
-        process.env.REFRESH_TOKEN_SECRET,
-        {
-            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-        }
-    );
+    // console.log(process.env.REFRESH_TOKEN_SECRET)
+    try {
+        return jwt.sign(
+            {
+                _id: this._id,
+            },
+            
+            process.env.REFRESH_TOKEN_SECRET,
+            {
+                expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+            }
+        );
+    } catch (error) {
+        // console.log(error)
+        console.log("error in model")
+        throw new ApiError(500,"Error while generating refreshToken")
+    }
 };
 
 // Creating the User model using the defined schema

@@ -28,7 +28,7 @@ router.route("/register").post(
     registerUser
 );
 
-router.route("/login").poost(loginUser)
+router.route("/login").post(loginUser)
 router.route("/logout").post(verifyJWT,logoutUser)
 
 // Exporting the router to make it available for use in other modules
