@@ -2,7 +2,7 @@
 import { Router } from "express";
 
 // Importing the registerUser function from the user.controller module
-import { loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
+import { loginUser, logoutUser, registerUser, refreshAccessToken } from "../controllers/user.controller.js";
 
 // Importing the upload middleware from the multer.middleware module
 import { upload } from "../middlewares/multer.middleware.js";
@@ -29,7 +29,12 @@ router.route("/register").post(
 );
 
 router.route("/login").post(loginUser)
+
+//secured lines
+
 router.route("/logout").post(verifyJWT,logoutUser)
+router.route("/refresh-token").post(refreshAccessToken)
+
 
 // Exporting the router to make it available for use in other modules
 export default router;
